@@ -65,8 +65,13 @@
 .card {
   display: flex;
   flex-direction: column;
-  cursor: pointer;
-  group: 1;
+}
+
+.cardLink {
+  display: flex;
+  flex-direction: column;
+  color: inherit;
+  text-decoration: none;
 
   &:hover .imagePlaceholder {
     border-color: #cbd5e1;
