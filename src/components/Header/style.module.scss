@@ -1,7 +1,90 @@
 .header {
-  height: 70px;
-  width: 100vw;
-  overflow-x: hidden;
-  border-bottom: 1px solid #eaeaea;
-  background: #f2f2f2;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  width: 100%;
+  height: 72px;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid #ebebeb;
+}
+
+.inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+}
+
+.orb {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 35% 30%,
+    #ff9a76 0%,
+    #ff3366 32%,
+    #8b22cc 68%,
+    #1d63ea 100%
+  );
+  box-shadow: 
+    inset -2px -2px 6px rgba(0, 0, 0, 0.25),
+    inset 2px 2px 5px rgba(255, 255, 255, 0.45),
+    0 4px 14px rgba(255, 51, 102, 0.22);
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
+  flex-shrink: 0;
+
+  &:hover {
+    transform: scale(1.08);
+    box-shadow: 
+      inset -2px -2px 6px rgba(0, 0, 0, 0.25),
+      inset 2px 2px 5px rgba(255, 255, 255, 0.55),
+      0 6px 18px rgba(255, 51, 102, 0.35);
+  }
+}
+
+.menuBtn {
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  background: #f1f2f4;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 4.5px;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  span {
+    display: block;
+    width: 16px;
+    height: 1.5px;
+    background-color: #374151;
+    border-radius: 1px;
+    transition: all 0.2s ease;
+  }
+
+  &:hover {
+    background: #e5e7eb;
+    span {
+      background-color: #111827;
+    }
+  }
+
+  &:active {
+    transform: scale(0.96);
+  }
 }
