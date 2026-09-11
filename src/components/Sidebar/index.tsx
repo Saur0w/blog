@@ -1,6 +1,6 @@
 "use client";
 
-import styles from "./Sidebar.module.css";
+import styles from "./styles.module.css";
 
 export default function Sidebar() {
     return (
