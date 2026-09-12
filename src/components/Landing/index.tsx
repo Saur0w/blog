@@ -19,9 +19,7 @@ export default function Landing() {
     <div className={styles.container}>
       <section className={styles.hero}>
         <h1 className={styles.headline}>
-          Welcome to my blog{" "}
-          <span className={styles.inlineOrb} aria-hidden="true" /> I&apos;m
-          Saurow and here I document how I make my projects.
+          Welcome to my blog — I&apos;m Saurow and here I document how I make my projects.
         </h1>
 
         <div className={styles.pillGroup}>

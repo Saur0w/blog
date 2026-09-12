@@ -78,7 +78,6 @@ export default function Header() {
       <header className={styles.header}>
         <div className={styles.inner}>
           <Link href="/" className={styles.brand} aria-label="Blog Homepage">
-            <div className={styles.orb} />
             <span className={styles.brandText}>Saurow</span>
           </Link>
           <div className={styles.actions}>

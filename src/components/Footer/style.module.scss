@@ -20,6 +20,7 @@
 .leftCol {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 0.75rem;
   font-size: 0.85rem;
   color: var(--muted, #737373);
@@ -36,6 +37,19 @@
 
 .tagline {
   font-size: 0.825rem;
+}
+
+.creditLink {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: rgba(115, 115, 115, 0.4);
+  transition: color 0.15s ease, text-decoration-color 0.15s ease;
+
+  &:hover {
+    color: var(--foreground, #111111);
+    text-decoration-color: var(--foreground, #111111);
+  }
 }
 
 .links {
@@ -60,25 +74,6 @@
 
   &:hover {
     color: var(--foreground, #111111);
-  }
-}
-
-.topBtn {
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: var(--muted, #737373);
-  background: none;
-  border: none;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  transition: color 0.15s ease, transform 0.15s ease;
-  padding: 0;
-
-  &:hover {
-    color: var(--foreground, #111111);
-    transform: translateY(-1px);
   }
 }
 

@@ -4,10 +4,6 @@ import Link from "next/link";
 import styles from "./style.module.scss";
 
 export default function Footer() {
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
   return (
     <footer className={styles.footer}>
       <div className={styles.inner}>
@@ -17,7 +13,15 @@ export default function Footer() {
           </span>
           <span className={styles.divider}>•</span>
           <span className={styles.tagline}>
-            Creative experiments & tutorials
+            Inspired by{" "}
+            <Link
+              href="https://olivierlarose.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.creditLink}
+            >
+              Olivier Larose
+            </Link>
           </span>
         </div>
 
@@ -34,15 +38,15 @@ export default function Footer() {
           <Link href="/about" className={styles.link}>
             About
           </Link>
-          <button
-            type="button"
-            onClick={scrollToTop}
-            className={styles.topBtn}
-            aria-label="Scroll back to top"
+          <Link
+            href="https://saurow.vercel.app"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.link}
           >
-            <span>Back to top</span>
-            <span>↑</span>
-          </button>
+            <span>Portfolio</span>
+            <span>↗</span>
+          </Link>
         </div>
       </div>
     </footer>
