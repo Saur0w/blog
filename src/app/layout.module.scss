@@ -1,19 +1,17 @@
 .shell {
   display: flex;
   width: 100%;
-  max-width: 1600px;
-  margin: 0 auto;
   min-height: calc(100vh - 72px);
 }
 
 .mainArea {
   flex: 1;
   min-width: 0;
-  padding: 2rem 2.5rem 4rem;
+  padding: 0;
 }
 
 @media (max-width: 768px) {
   .mainArea {
-    padding: 1.5rem 1rem 3rem;
+    padding: 0;
   }
 }

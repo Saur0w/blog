@@ -1,5 +1,5 @@
 :root {
-  --background: #ffffff;
+  --background: #f4f4f4;
   --foreground: #111111;
   --muted: #737373;
   --muted-light: #999999;
@@ -32,6 +32,12 @@
   --btn-hover: #22262f;
   --btn-border: rgba(255, 255, 255, 0.08);
   --btn-fg: #d1d5db;
+}
+
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 html {

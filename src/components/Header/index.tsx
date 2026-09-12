@@ -155,15 +155,19 @@ export default function Header() {
           onClick={(e) => e.stopPropagation()}
         >
           <Link href="/" className={styles.drawerLink} onClick={closeMenu}>
-            <span>All Tutorials</span>
+            <span>Introduction</span>
             <span>→</span>
           </Link>
-          <Link href="/" className={styles.drawerLink} onClick={closeMenu}>
-            <span>Categories</span>
+          <Link
+            href="/article/mask-section-transition"
+            className={styles.drawerLink}
+            onClick={closeMenu}
+          >
+            <span>Articles</span>
             <span>→</span>
           </Link>
           <div className={styles.drawerDivider} />
-          <Link href="/" className={styles.drawerLink} onClick={closeMenu}>
+          <Link href="/about" className={styles.drawerLink} onClick={closeMenu}>
             <span>About</span>
             <span>→</span>
           </Link>
