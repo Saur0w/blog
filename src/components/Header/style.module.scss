@@ -4,10 +4,11 @@
   z-index: 100;
   width: 100%;
   height: 72px;
-  background: rgba(255, 255, 255, 0.88);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid #ebebeb;
+  background: var(--header-bg, rgba(255, 255, 255, 0.88));
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--border, #ebebeb);
+  transition: background-color 0.25s ease, border-color 0.25s ease;
 }
 
 .inner {
@@ -25,6 +26,7 @@
   align-items: center;
   gap: 0.75rem;
   text-decoration: none;
+  cursor: pointer;
 }
 
 .orb {
@@ -54,37 +56,171 @@
   }
 }
 
+.brandText {
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--foreground, #111111);
+  transition: color 0.25s ease;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.themeBtn {
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  background: var(--btn-bg, #f1f2f4);
+  border: 1px solid var(--btn-border, rgba(0, 0, 0, 0.04));
+  color: var(--btn-fg, #374151);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    background: var(--btn-hover, #e5e7eb);
+    color: var(--foreground, #111827);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+.themeIcon {
+  width: 18px;
+  height: 18px;
+  transition: transform 0.25s ease, opacity 0.2s ease;
+}
+
 .menuBtn {
   width: 38px;
   height: 38px;
   border-radius: 8px;
-  background: #f1f2f4;
+  background: var(--btn-bg, #f1f2f4);
+  border: 1px solid var(--btn-border, rgba(0, 0, 0, 0.04));
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   gap: 4.5px;
-  border: 1px solid rgba(0, 0, 0, 0.04);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
 
   span {
     display: block;
     width: 16px;
     height: 1.5px;
-    background-color: #374151;
+    background-color: var(--btn-fg, #374151);
     border-radius: 1px;
-    transition: all 0.2s ease;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease, background-color 0.2s ease;
+    transform-origin: center;
   }
 
   &:hover {
-    background: #e5e7eb;
+    background: var(--btn-hover, #e5e7eb);
     span {
-      background-color: #111827;
+      background-color: var(--foreground, #111827);
     }
   }
 
   &:active {
-    transform: scale(0.96);
+    transform: scale(0.95);
+  }
+
+  &.open {
+    span:nth-child(1) {
+      transform: translateY(6px) rotate(45deg);
+      background-color: var(--foreground, #111827);
+    }
+    span:nth-child(2) {
+      opacity: 0;
+      transform: scaleX(0);
+    }
+    span:nth-child(3) {
+      transform: translateY(-6px) rotate(-45deg);
+      background-color: var(--foreground, #111827);
+    }
+  }
+}
+
+/* Mobile / Drawer Menu */
+.mobileOverlay {
+  position: fixed;
+  top: 72px;
+  left: 0;
+  width: 100vw;
+  height: calc(100vh - 72px);
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 99;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+
+  &.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+.mobileDrawer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: var(--background, #ffffff);
+  border-bottom: 1px solid var(--border, #ebebeb);
+  padding: 1.5rem 2rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  transform: translateY(-12px);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.25s ease;
+  box-shadow: 0 16px 32px -8px rgba(0, 0, 0, 0.08);
+
+  .open & {
+    transform: translateY(0);
+  }
+}
+
+.drawerLink {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--foreground, #111827);
+  text-decoration: none;
+  transition: background-color 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    background-color: var(--btn-bg, #f1f2f4);
+    color: var(--accent-blue, #2563eb);
+  }
+}
+
+.drawerDivider {
+  height: 1px;
+  background-color: var(--border, #ebebeb);
+  margin: 0.5rem 0;
+}
+
+@media (max-width: 768px) {
+  .inner {
+    padding: 0 1.25rem;
+  }
+  .mobileDrawer {
+    padding: 1.25rem 1.25rem 1.75rem;
   }
 }
