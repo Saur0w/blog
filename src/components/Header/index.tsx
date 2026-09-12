@@ -163,7 +163,7 @@ export default function Header() {
             className={styles.drawerLink}
             onClick={closeMenu}
           >
-            <span>Articles</span>
+            <span>Article</span>
             <span>→</span>
           </Link>
           <div className={styles.drawerDivider} />

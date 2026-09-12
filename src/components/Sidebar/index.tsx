@@ -6,7 +6,7 @@ import styles from "./style.module.scss";
 
 const NAV_ITEMS = [
   { label: "Introduction", href: "/" },
-  { label: "Articles", href: "/article/mask-section-transition" },
+  { label: "Article", href: "/article/mask-section-transition" },
   { label: "About", href: "/about" },
 ];
 
@@ -21,7 +21,7 @@ export default function Sidebar() {
             const isActive =
               item.href === "/"
                 ? pathname === "/"
-                : pathname.startsWith("/article") && item.label === "Articles"
+                : pathname.startsWith("/article") && item.label === "Article"
                 ? true
                 : pathname === item.href;
 

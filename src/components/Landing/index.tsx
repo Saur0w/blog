@@ -1,123 +1,95 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import styles from "./style.module.scss";
 
-const FILTERS = [
-  "RECENT",
-  "POPULAR",
-  "SCROLL",
-  "MOUSE",
-  "MISC",
-  "3D",
-  "MENU",
-  "TRANSITION",
-  "SVG",
-  "LANDING PAGE",
-];
-
-const PLACEHOLDER_CARDS = [
+const UPCOMING_PROJECTS = [
   {
     id: 1,
-    title: "Mask Section Transition",
-    date: "June 3, 2024",
-    tag: "SCROLL",
-    desc: "A website tutorial featuring a scroll animation using an SVG Mask to create a section transition.",
+    title: "First Project Breakdown",
+    tag: "TUTORIAL",
+    status: "Adding Soon",
+    icon: "◈",
+    desc: "Currently documenting the build process and creative code for upcoming interactive projects. Dropping soon.",
   },
   {
     id: 2,
-    title: "Mouse Image Distortion",
-    date: "June 3, 2024",
-    tag: "MOUSE",
-    desc: "A website animation featuring an image distortion in a curved plane, using shaders and smooth interpolation.",
+    title: "Creative Animations & Motion",
+    tag: "INTERACTIVE",
+    status: "In Progress",
+    icon: "✦",
+    desc: "A deep dive into fluid physics-based interactions, custom easing, and smooth scroll transitions.",
   },
   {
     id: 3,
-    title: "Background Image Parallax",
-    date: "May 25, 2024",
-    tag: "SCROLL",
-    desc: "A website animation featuring a background image moving on scroll in a parallax motion with smooth easing.",
-  },
-  {
-    id: 4,
-    title: "Zoom Parallax Effect",
-    date: "May 18, 2024",
-    tag: "SCROLL",
-    desc: "A scale-based scroll experience expanding images seamlessly as the user scrolls down the page.",
-  },
-  {
-    id: 5,
-    title: "Interactive 3D Card Hover",
-    date: "May 10, 2024",
-    tag: "3D",
-    desc: "A reactive cursor tilt animation built with perspective CSS transformations and realistic specular light.",
-  },
-  {
-    id: 6,
-    title: "Smooth Layout Page Transition",
-    date: "April 29, 2024",
-    tag: "TRANSITION",
-    desc: "Seamless page transitions preserving element positions and animating between routes effortlessly.",
+    title: "Design Systems & Modern UI",
+    tag: "ARCHITECTURE",
+    status: "Upcoming",
+    icon: "⟡",
+    desc: "Engineering responsive layouts, minimalist typography, and seamless dark mode web architecture.",
   },
 ];
 
 export default function Landing() {
-  const [activeFilter, setActiveFilter] = useState("RECENT");
-
   return (
     <div className={styles.container}>
-      {/* Filter tags bar */}
-      <div className={styles.filterBar} role="tablist" aria-label="Tutorial categories">
-        {FILTERS.map((filter) => (
-          <button
-            key={filter}
-            type="button"
-            className={`${styles.filterPill} ${activeFilter === filter ? styles.active : ""}`}
-            onClick={() => setActiveFilter(filter)}
-            role="tab"
-            aria-selected={activeFilter === filter}
+      <section className={styles.hero}>
+        <h1 className={styles.headline}>
+          Welcome to my blog{" "}
+          <span className={styles.inlineOrb} aria-hidden="true" /> I&apos;m
+          Saurow and here I document how I make my projects.
+        </h1>
+
+        <div className={styles.pillGroup}>
+          <Link href="/article/mask-section-transition" className={styles.navPill}>
+            <span>ARTICLES</span>
+            <span className={styles.pillArrow}>↗</span>
+          </Link>
+          <Link href="/about" className={styles.navPill}>
+            <span>ABOUT ME</span>
+            <span className={styles.pillArrow}>↗</span>
+          </Link>
+          <Link
+            href="https://github.com/Saur0w"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.navPill}
           >
-            {filter}
-          </button>
-        ))}
-      </div>
+            <span>GITHUB</span>
+            <span className={styles.pillArrow}>↗</span>
+          </Link>
+        </div>
+      </section>
 
-      {/* Heading */}
-      <h1 className={styles.title}>All Tutorials</h1>
+      <section className={styles.section}>
+        <div className={styles.sectionHeader}>
+          <h2 className={styles.sectionTitle}>Recent Breakdowns</h2>
+          <Link href="/article/mask-section-transition" className={styles.seeAllLink}>
+            See All →
+          </Link>
+        </div>
 
-      {/* Tutorial Cards 3-column Grid */}
-      <div className={styles.grid}>
-        {PLACEHOLDER_CARDS.map((card) => (
-          <article key={card.id} className={styles.card}>
-            <Link href="/article/mask-section-transition" className={styles.cardLink}>
-              <div className={styles.imagePlaceholder}>
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                >
-                  <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
-                  <circle cx="9" cy="9" r="2" />
-                  <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
-                </svg>
+        <div className={styles.grid}>
+          {UPCOMING_PROJECTS.map((project) => (
+            <article key={project.id} className={styles.card}>
+              <div className={styles.cardLink}>
+                <div className={styles.thumbnail}>
+                  <span className={styles.thumbnailIcon}>{project.icon}</span>
+                  <span className={styles.thumbnailBadge}>{project.status}</span>
+                </div>
+
+                <div className={styles.metaRow}>
+                  <span className={styles.cardTag}>{project.tag}</span>
+                  <span>{project.status}</span>
+                </div>
+
+                <h3 className={styles.cardTitle}>{project.title}</h3>
+                <p className={styles.cardDesc}>{project.desc}</p>
               </div>
-
-              <div className={styles.metaRow}>
-                <span>{card.date}</span>
-                <span className={styles.cardTag}>{card.tag}</span>
-              </div>
-
-              <h2 className={styles.cardTitle}>{card.title}</h2>
-              <p className={styles.cardDesc}>{card.desc}</p>
-            </Link>
-          </article>
-        ))}
-      </div>
+            </article>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }
