@@ -3,30 +3,14 @@
 import Link from "next/link";
 import styles from "./style.module.scss";
 
-const UPCOMING_PROJECTS = [
+const UPCOMING_ARTICLES = [
   {
     id: 1,
-    title: "First Project Breakdown",
-    tag: "TUTORIAL",
-    status: "Adding Soon",
+    title: "First Article Breakdown",
+    tag: "ARTICLE",
+    status: "Coming Soon",
     icon: "◈",
     desc: "Currently documenting the build process and creative code for upcoming interactive projects. Dropping soon.",
-  },
-  {
-    id: 2,
-    title: "Creative Animations & Motion",
-    tag: "INTERACTIVE",
-    status: "In Progress",
-    icon: "✦",
-    desc: "A deep dive into fluid physics-based interactions, custom easing, and smooth scroll transitions.",
-  },
-  {
-    id: 3,
-    title: "Design Systems & Modern UI",
-    tag: "ARCHITECTURE",
-    status: "Upcoming",
-    icon: "⟡",
-    desc: "Engineering responsive layouts, minimalist typography, and seamless dark mode web architecture.",
   },
 ];
 
@@ -63,28 +47,28 @@ export default function Landing() {
 
       <section className={styles.section}>
         <div className={styles.sectionHeader}>
-          <h2 className={styles.sectionTitle}>Recent Breakdowns</h2>
+          <h2 className={styles.sectionTitle}>Articles</h2>
           <Link href="/article/mask-section-transition" className={styles.seeAllLink}>
             See All →
           </Link>
         </div>
 
         <div className={styles.grid}>
-          {UPCOMING_PROJECTS.map((project) => (
-            <article key={project.id} className={styles.card}>
+          {UPCOMING_ARTICLES.map((article) => (
+            <article key={article.id} className={styles.card}>
               <div className={styles.cardLink}>
                 <div className={styles.thumbnail}>
-                  <span className={styles.thumbnailIcon}>{project.icon}</span>
-                  <span className={styles.thumbnailBadge}>{project.status}</span>
+                  <span className={styles.thumbnailIcon}>{article.icon}</span>
+                  <span className={styles.thumbnailBadge}>{article.status}</span>
                 </div>
 
                 <div className={styles.metaRow}>
-                  <span className={styles.cardTag}>{project.tag}</span>
-                  <span>{project.status}</span>
+                  <span className={styles.cardTag}>{article.tag}</span>
+                  <span>{article.status}</span>
                 </div>
 
-                <h3 className={styles.cardTitle}>{project.title}</h3>
-                <p className={styles.cardDesc}>{project.desc}</p>
+                <h3 className={styles.cardTitle}>{article.title}</h3>
+                <p className={styles.cardDesc}>{article.desc}</p>
               </div>
             </article>
           ))}
