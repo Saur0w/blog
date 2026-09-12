@@ -6,22 +6,26 @@ import styles from "./layout.module.scss";
 
 
 export const metadata: Metadata = {
-  title: "Tutorials & Articles | Modern Web Design",
-  description: "Explore website animations, interactions, and tutorials.",
+  title: "Blog",
+  description: "Blog layout structure",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-      <html lang="en">
+    <html lang="en">
       <body>
-      <Header />
-      <div className={styles.shell}>
-        <Sidebar />
-        <main className={styles.mainArea}>
-          {children}
-        </main>
-      </div>
+        <Header />
+        <div className={styles.shell}>
+          <Sidebar />
+          <main className={styles.mainArea}>
+            {children}
+          </main>
+        </div>
       </body>
-      </html>
+    </html>
   );
 }
