@@ -77,13 +77,10 @@ export default function Header() {
     <>
       <header className={styles.header}>
         <div className={styles.inner}>
-          {/* Simple Logo Left */}
           <Link href="/" className={styles.brand} aria-label="Blog Homepage">
             <div className={styles.orb} />
-            <span className={styles.brandText}>Blog</span>
+            <span className={styles.brandText}>Saurow</span>
           </Link>
-
-          {/* Actions Right: Dark/Light Mode Switch & Burger Menu */}
           <div className={styles.actions}>
             <button
               type="button"
@@ -97,7 +94,6 @@ export default function Header() {
               }
             >
               {theme === "dark" ? (
-                /* Sun icon */
                 <svg
                   className={styles.themeIcon}
                   viewBox="0 0 24 24"
@@ -119,7 +115,6 @@ export default function Header() {
                   <path d="m19.07 4.93-1.41 1.41" />
                 </svg>
               ) : (
-                /* Moon icon */
                 <svg
                   className={styles.themeIcon}
                   viewBox="0 0 24 24"
@@ -150,7 +145,6 @@ export default function Header() {
         </div>
       </header>
 
-      {/* Slide-down / Dropdown Menu Drawer */}
       <div
         className={`${styles.mobileOverlay} ${isMenuOpen ? styles.open : ""}`}
         onClick={closeMenu}
