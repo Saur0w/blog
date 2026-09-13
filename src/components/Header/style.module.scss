@@ -206,6 +206,76 @@
   margin: 0.5rem 0;
 }
 
+.socialSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.socialLabel {
+  font-size: 0.725rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted, #6b7280);
+  padding: 0 0.5rem;
+}
+
+.socialGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 0.5rem;
+}
+
+.socialLink {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.625rem 0.875rem;
+  border-radius: 8px;
+  background: var(--btn-bg, #f1f2f4);
+  border: 1px solid var(--btn-border, rgba(0, 0, 0, 0.04));
+  color: var(--foreground, #111827);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    background: var(--btn-hover, #e5e7eb);
+    color: var(--accent-blue, #2563eb);
+    border-color: rgba(37, 99, 235, 0.15);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+.socialItemLeft {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.socialIcon {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+}
+
+.socialArrow {
+  font-size: 0.8rem;
+  opacity: 0.5;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+
+  .socialLink:hover & {
+    opacity: 1;
+    transform: translate(1px, -1px);
+  }
+}
+
 @media (max-width: 900px) {
   .inner {
     display: flex;
