@@ -8,7 +8,7 @@ import styles from "./layout.module.scss";
 
 export const metadata: Metadata = {
   title: {
-    default: "Saurow — Creative Developer & Blog",
+    default: "Saurow.Blog",
     template: "%s — Saurow",
   },
   description:
