@@ -202,7 +202,7 @@ export default function Header() {
               </Link>
 
               <Link
-                href="https://linkedin.com/in/saur0w"
+                href="https://www.linkedin.com/in/saurabh-thapliyal-76a0a6306"
                 target="_blank"
                 rel="noopener noreferrer"
                 className={styles.socialLink}
