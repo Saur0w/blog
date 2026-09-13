@@ -7,8 +7,12 @@ import styles from "./layout.module.scss";
 
 
 export const metadata: Metadata = {
-  title: "Blog",
-  description: "Blog layout structure",
+  title: {
+    default: "Saurow — Creative Developer & Blog",
+    template: "%s — Saurow",
+  },
+  description:
+    "Documenting interactive digital experiences, creative coding, WebGL, shaders, and front-end engineering by Saurabh Thapliyal.",
 };
 
 export default function RootLayout({
