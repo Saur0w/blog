@@ -8,7 +8,7 @@
   --accent-blue: #2563eb;
   --pill-bg: #f3f4f6;
   --card-bg: #ffffff;
-  --header-bg: rgba(255, 255, 255, 0.82);
+  --header-bg: rgba(244, 244, 244, 0.85);
   --header-height: 72px;
   --sidebar-width: 280px;
   --btn-bg: #f1f2f4;
@@ -27,7 +27,7 @@
   --accent-blue: #3b82f6;
   --pill-bg: #15181e;
   --card-bg: #0f1115;
-  --header-bg: rgba(9, 10, 12, 0.82);
+  --header-bg: rgba(9, 10, 12, 0.85);
   --btn-bg: #16181d;
   --btn-hover: #22262f;
   --btn-border: rgba(255, 255, 255, 0.08);

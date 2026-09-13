@@ -8,7 +8,7 @@ const UPCOMING_ARTICLES = [
     id: 1,
     title: "First Article Breakdown",
     tag: "ARTICLE",
-    status: "Coming Soon",
+    status: "Adding Soon",
     icon: "◈",
     desc: "Currently documenting the build process and creative code for upcoming interactive projects. Dropping soon.",
   },
@@ -23,7 +23,7 @@ export default function Landing() {
         </h1>
 
         <div className={styles.pillGroup}>
-          <Link href="/article/mask-section-transition" className={styles.navPill}>
+          <Link href="/article" className={styles.navPill}>
             <span>ARTICLES</span>
             <span className={styles.pillArrow}>↗</span>
           </Link>
@@ -46,7 +46,7 @@ export default function Landing() {
       <section className={styles.section}>
         <div className={styles.sectionHeader}>
           <h2 className={styles.sectionTitle}>Articles</h2>
-          <Link href="/article/mask-section-transition" className={styles.seeAllLink}>
+          <Link href="/article" className={styles.seeAllLink}>
             See All →
           </Link>
         </div>

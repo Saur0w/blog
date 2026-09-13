@@ -6,7 +6,7 @@ import styles from "./style.module.scss";
 
 const NAV_ITEMS = [
   { label: "Introduction", href: "/" },
-  { label: "Article", href: "/article/mask-section-transition" },
+  { label: "Article", href: "/article" },
   { label: "About", href: "/about" },
 ];
 

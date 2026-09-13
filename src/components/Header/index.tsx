@@ -158,7 +158,7 @@ export default function Header() {
             <span>→</span>
           </Link>
           <Link
-            href="/article/mask-section-transition"
+            href="/article"
             className={styles.drawerLink}
             onClick={closeMenu}
           >
