@@ -77,69 +77,73 @@ export default function Header() {
     <>
       <header className={styles.header}>
         <div className={styles.inner}>
-          <Link href="/" className={styles.brand} aria-label="Blog Homepage">
-            <span className={styles.brandText}>Saurow</span>
-          </Link>
-          <div className={styles.actions}>
-            <button
-              type="button"
-              className={styles.themeBtn}
-              onClick={toggleTheme}
-              aria-label={
-                theme === "dark" ? "Switch to light mode" : "Switch to dark mode"
-              }
-              title={
-                theme === "dark" ? "Switch to light mode" : "Switch to dark mode"
-              }
-            >
-              {theme === "dark" ? (
-                <svg
-                  className={styles.themeIcon}
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                >
-                  <circle cx="12" cy="12" r="4" />
-                  <path d="M12 2v2" />
-                  <path d="M12 20v2" />
-                  <path d="m4.93 4.93 1.41 1.41" />
-                  <path d="m17.66 17.66 1.41 1.41" />
-                  <path d="M2 12h2" />
-                  <path d="M20 12h2" />
-                  <path d="m6.34 17.66-1.41 1.41" />
-                  <path d="m19.07 4.93-1.41 1.41" />
-                </svg>
-              ) : (
-                <svg
-                  className={styles.themeIcon}
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                >
-                  <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
-                </svg>
-              )}
-            </button>
+          <div className={styles.brandWrap}>
+            <Link href="/" className={styles.brand} aria-label="Blog Homepage">
+              <span className={styles.brandText}>Saurow</span>
+            </Link>
+          </div>
+          <div className={styles.actionsWrap}>
+            <div className={styles.actions}>
+              <button
+                type="button"
+                className={styles.themeBtn}
+                onClick={toggleTheme}
+                aria-label={
+                  theme === "dark" ? "Switch to light mode" : "Switch to dark mode"
+                }
+                title={
+                  theme === "dark" ? "Switch to light mode" : "Switch to dark mode"
+                }
+              >
+                {theme === "dark" ? (
+                  <svg
+                    className={styles.themeIcon}
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <circle cx="12" cy="12" r="4" />
+                    <path d="M12 2v2" />
+                    <path d="M12 20v2" />
+                    <path d="m4.93 4.93 1.41 1.41" />
+                    <path d="m17.66 17.66 1.41 1.41" />
+                    <path d="M2 12h2" />
+                    <path d="M20 12h2" />
+                    <path d="m6.34 17.66-1.41 1.41" />
+                    <path d="m19.07 4.93-1.41 1.41" />
+                  </svg>
+                ) : (
+                  <svg
+                    className={styles.themeIcon}
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+                  </svg>
+                )}
+              </button>
 
-            <button
-              type="button"
-              className={`${styles.menuBtn} ${isMenuOpen ? styles.open : ""}`}
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-              aria-expanded={isMenuOpen}
-            >
-              <span />
-              <span />
-              <span />
-            </button>
+              <button
+                type="button"
+                className={`${styles.menuBtn} ${isMenuOpen ? styles.open : ""}`}
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+                aria-expanded={isMenuOpen}
+              >
+                <span />
+                <span />
+                <span />
+              </button>
+            </div>
           </div>
         </div>
       </header>

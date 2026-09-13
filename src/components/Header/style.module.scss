@@ -12,14 +12,26 @@
 }
 
 .inner {
-  display: flex;
+  display: grid;
+  grid-template-columns: 480px 1fr;
   align-items: center;
-  justify-content: space-between;
   height: 100%;
   width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 3rem;
+}
+
+.brandWrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.actionsWrap {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  height: 100%;
+  padding-right: 4rem;
 }
 
 .brand {
