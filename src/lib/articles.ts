@@ -32,7 +32,24 @@ export const ARTICLES: Article[] = [
     icon: "◈",
     demoUrl: "https://saurow-reel.vercel.app",
     githubUrl: "https://github.com/Saur0w/Reel-Flux",
-  }
+  },
+  {
+    slug: "stride",
+    title: "STRIDE: Kinetic Preloader & View Transitions",
+    kicker: "MOTION ARCHITECTURE",
+    excerpt:
+      "Engineering an editorial kinetic typography preloader with GSAP slot-machine scrubbing and seamless route changes via React 19 View Transitions.",
+    date: "Sep 2026",
+    readTime: "7 min read",
+    status: "Breakdown",
+    isPublished: true,
+    image: "/images/stride/tn.png",
+    imageAlt: "STRIDE luxury footwear preloader and smooth view transition architecture",
+    tags: ["Next.js 16", "React 19", "GSAP", "View Transitions", "Lenis"],
+    icon: "✦",
+    demoUrl: "https://str1de.vercel.app",
+    githubUrl: "https://github.com/Saur0w/stride",
+  },
 ];
 
 export function getAllArticles(): Article[] {

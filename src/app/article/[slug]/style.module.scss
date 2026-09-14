@@ -147,6 +147,48 @@
   color: var(--foreground, #3f3f46);
 }
 
+.actionRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.actionBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.45rem 0.9rem;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border: 1px solid var(--border, #e4e4e7);
+  background: var(--card-bg, #ffffff);
+  color: var(--foreground, #111111);
+
+  &:hover {
+    background: var(--foreground, #111111);
+    color: #ffffff;
+    border-color: var(--foreground, #111111);
+    transform: translateY(-1px);
+  }
+}
+
+.actionBtnPrimary {
+  background: var(--foreground, #111111);
+  color: #ffffff;
+  border-color: var(--foreground, #111111);
+
+  &:hover {
+    background: var(--accent-blue, #2563eb);
+    border-color: var(--accent-blue, #2563eb);
+    color: #ffffff;
+    transform: translateY(-1px);
+  }
+}
+
 /* Hero Media */
 .heroMedia {
   display: flex;
