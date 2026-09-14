@@ -134,10 +134,19 @@
   text-decoration: none;
   cursor: pointer;
 
-  &:hover .thumbnail {
+  &:hover .thumbnail,
+  &:hover .imageThumbnail {
     border-color: var(--muted, #71717a);
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.08);
+  }
+
+  &:hover .cardImg {
+    transform: scale(1.04);
+  }
+
+  &:hover .cardTitle {
+    color: var(--accent-blue, #2563eb);
   }
 }
 
@@ -156,6 +165,43 @@
   position: relative;
   overflow: hidden;
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.imageThumbnail {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  border-radius: 12px;
+  background-color: var(--card-bg, #ffffff);
+  border: 1px solid var(--border, #ebebeb);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cardImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.badgeOverlay {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 2;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #ffffff;
+  background-color: rgba(17, 24, 39, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
 }
 
 .thumbnailBadge {

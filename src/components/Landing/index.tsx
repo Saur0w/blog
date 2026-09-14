@@ -1,18 +1,9 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
+import { ARTICLES } from "@/lib/articles";
 import styles from "./style.module.scss";
-
-const UPCOMING_ARTICLES = [
-  {
-    id: 1,
-    title: "First Article Breakdown",
-    tag: "ARTICLE",
-    status: "Adding Soon",
-    icon: "◈",
-    desc: "Currently documenting the build process and creative code for upcoming interactive projects. Dropping soon.",
-  },
-];
 
 export default function Landing() {
   return (
@@ -52,24 +43,59 @@ export default function Landing() {
         </div>
 
         <div className={styles.grid}>
-          {UPCOMING_ARTICLES.map((article) => (
-            <article key={article.id} className={styles.card}>
-              <div className={styles.cardLink}>
-                <div className={styles.thumbnail}>
-                  <span className={styles.thumbnailIcon}>{article.icon}</span>
-                  <span className={styles.thumbnailBadge}>{article.status}</span>
-                </div>
+          {ARTICLES.map((article) => {
+            if (article.isPublished) {
+              return (
+                <article key={article.slug} className={styles.card}>
+                  <Link
+                    href={`/article/${article.slug}`}
+                    className={styles.cardLink}
+                  >
+                    <div className={styles.imageThumbnail}>
+                      <Image
+                        src={article.image}
+                        alt={article.imageAlt}
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1150px) 50vw, 33vw"
+                        className={styles.cardImg}
+                        priority
+                      />
+                      <span className={styles.badgeOverlay}>
+                        {article.status}
+                      </span>
+                    </div>
 
-                <div className={styles.metaRow}>
-                  <span className={styles.cardTag}>{article.tag}</span>
-                  <span>{article.status}</span>
-                </div>
+                    <div className={styles.metaRow}>
+                      <span className={styles.cardTag}>{article.kicker}</span>
+                      <span>{article.readTime}</span>
+                    </div>
 
-                <h3 className={styles.cardTitle}>{article.title}</h3>
-                <p className={styles.cardDesc}>{article.desc}</p>
-              </div>
-            </article>
-          ))}
+                    <h3 className={styles.cardTitle}>{article.title}</h3>
+                    <p className={styles.cardDesc}>{article.excerpt}</p>
+                  </Link>
+                </article>
+              );
+            }
+
+            return (
+              <article key={article.slug} className={styles.card}>
+                <div className={styles.cardLink}>
+                  <div className={styles.thumbnail}>
+                    <span className={styles.thumbnailIcon}>{article.icon}</span>
+                    <span className={styles.thumbnailBadge}>{article.status}</span>
+                  </div>
+
+                  <div className={styles.metaRow}>
+                    <span className={styles.cardTag}>{article.kicker}</span>
+                    <span>{article.status}</span>
+                  </div>
+
+                  <h3 className={styles.cardTitle}>{article.title}</h3>
+                  <p className={styles.cardDesc}>{article.excerpt}</p>
+                </div>
+              </article>
+            );
+          })}
         </div>
       </section>
     </div>
