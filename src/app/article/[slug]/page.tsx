@@ -1348,7 +1348,7 @@ export default async function ArticleSlugPage({ params }: PageProps) {
             <ul className={styles.tocList}>
               <li>
                 <Link href="#context" className={styles.tocLink}>
-                  Context &amp; Mechanical Inspiration
+                  Context &amp; Inspiration
                 </Link>
               </li>
               <li>
@@ -1399,7 +1399,18 @@ export default async function ArticleSlugPage({ params }: PageProps) {
             </p>
 
             <section id="context">
-              <h2>Context &amp; Mechanical Inspiration</h2>
+              <h2>Context &amp; Inspiration</h2>
+              <p>
+                The tactile motion and physical aesthetic of this experiment draws direct inspiration from the acclaimed digital craftsmanship of{" "}
+                <a
+                  href="https://designembraced.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Design Embraced ↗
+                </a>
+                , where physical materiality, weight, and tangible feedback elevate interactive web design into an art form.
+              </p>
               <p>
                 In interface design, 3D card flips are commonly implemented using CSS <code>transform: rotateY(180deg)</code> or
                 flat Three.js planes. While functionally adequate, rigid planar rotation feels mechanical and artificial.
