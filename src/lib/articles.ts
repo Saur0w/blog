@@ -52,7 +52,7 @@ export const ARTICLES: Article[] = [
   },
   {
     slug: "fold",
-    title: "Paper Fold: 3D Mesh Deformation with Three.js TSL",
+    title: "Three.js (TSL): Mesh Folding",
     kicker: "WEBGPU / TSL",
     excerpt:
       "Engineering interactive 3D card folding, dynamic trigonometric depth curvature, and backface texture correction using Three.js Shading Language (TSL) and WebGPU.",
