@@ -220,6 +220,249 @@ const STRIDE_CSS_VIEW_TRANSITION_CODE = `/* src/app/globals.css - Pure CSS View 
   }
 }`;
 
+const FOLD_FOLDER_STRUCTURE = `saurow-fold/
+├── src/
+│   ├── app/
+│   │   ├── layout.tsx             # Root layout & dark viewport styling
+│   │   └── page.tsx               # Home landing & 3D canvas viewport mount
+│   ├── components/
+│   │   ├── Header/                # Editorial navigation & branding
+│   │   └── Landing/
+│   │       ├── index.tsx          # DOM UI overlays, interactive trigger & CTA
+│   │       ├── scene.tsx          # WebGPURenderer / R3F Canvas mount
+│   │       ├── mesh.tsx           # Plane mesh (256 segments) & TSL material
+│   │       └── style.module.scss  # Viewport layout & glassmorphic HUD
+│   └── lib/
+│       └── Shaders/
+│           └── index.ts           # flipVertexNode, createTextureNode, TSL uniforms`;
+
+const FOLD_VERTEX_NODE_CODE = `import {
+    positionLocal,
+    uv,
+    vec2,
+    vec3,
+    vec4,
+    uniform,
+    texture,
+    sin,
+    cos,
+    PI,
+    length,
+    smoothstep,
+    select,
+    float,
+    frontFacing,
+} from 'three/tsl';
+import * as THREE from 'three';
+
+// Uniforms
+export const uBend = uniform(-0.2);
+export const uPivot = uniform(0.0);
+export const uCurve = uniform(0.35);
+export const uMouse = uniform(new THREE.Vector2(0.5, 0.5));
+export const uHover = uniform(0.0);
+export const uBrightness = uniform(0.75);
+export const uHeight = uniform(1.0);
+export const uCoverScale = uniform(new THREE.Vector2(1.0, 1.0));
+
+// Backface mouse Y inversion
+const isBackFacingAngle = cos(uBend).lessThan(0.0);
+const mouseY = select(isBackFacingAngle, float(1.0).sub(uMouse.y), uMouse.y);
+const mouse = vec2(uMouse.x, mouseY);
+
+// Cursor proximity falloff & bidirectional hover offset
+const dist = length(uv().sub(mouse));
+const falloff = smoothstep(0.25, 0.0, dist);
+const faceDir = select(cos(uBend).greaterThanEqual(0.0), float(1.0), float(-1.0));
+const hoverOffset = falloff.mul(0.2).mul(uHover).mul(faceDir);
+
+// Mid-flight harmonic curvature
+const flex = sin(uv().y.mul(PI)).mul(uCurve).mul(sin(uBend));
+const initialZ = positionLocal.z.add(hoverOffset).sub(flex);
+
+// Axial rotation relative to pivot point
+const distY = positionLocal.y.sub(uPivot);
+const distZ = initialZ;
+
+const newY = uPivot.add(distY.mul(cos(uBend))).sub(distZ.mul(sin(uBend)));
+const newZ = distY.mul(sin(uBend)).add(distZ.mul(cos(uBend)));
+
+export const flipVertexNode = vec3(positionLocal.x, newY, newZ);`;
+
+const FOLD_TEXTURE_NODE_CODE = `// Fragment shader texture node with object-fit cover and automatic backface UV flip
+export const createTextureNode = (map: THREE.Texture) => {
+    const centeredUv = uv().sub(vec2(0.5, 0.5));
+    const coverUv = centeredUv.mul(uCoverScale).add(vec2(0.5, 0.5));
+    const backUv = vec2(coverUv.x, float(1.0).sub(coverUv.y));
+    const correctedUv = select(frontFacing, coverUv, backUv);
+    const sampled = texture(map, correctedUv);
+    return vec4(sampled.rgb.mul(uBrightness), sampled.a);
+};`;
+
+const FOLD_MESH_COMPONENT_CODE = `'use client';
+
+import React, { useRef, useMemo, useEffect } from 'react';
+import * as THREE from 'three';
+import { extend, useThree, ThreeEvent, ThreeElement, useFrame } from '@react-three/fiber';
+import { useTexture } from '@react-three/drei';
+import { MeshBasicNodeMaterial } from 'three/webgpu';
+import gsap from 'gsap';
+import { useGSAP } from '@gsap/react';
+import {
+    flipVertexNode,
+    createTextureNode,
+    uBend,
+    uHover,
+    uMouse,
+    uCoverScale,
+} from '@/lib/Shaders';
+
+extend({ MeshBasicNodeMaterial });
+
+declare module '@react-three/fiber' {
+    interface ThreeElements {
+        meshBasicNodeMaterial: ThreeElement<typeof MeshBasicNodeMaterial>;
+    }
+}
+
+interface TextureImage {
+    naturalWidth?: number;
+    naturalHeight?: number;
+    videoWidth?: number;
+    videoHeight?: number;
+    width?: number;
+    height?: number;
+}
+
+function getCardDimensions(width: number) {
+    if (width <= 480) return { w: 130, h: 143 };
+    if (width <= 768) return { w: 150, h: 165 };
+    if (width <= 1024) return { w: 175, h: 192 };
+    return { w: 200, h: 220 };
+}
+
+function getTargetScale(width: number) {
+    if (width <= 480) return 2.1;
+    if (width <= 768) return 2.2;
+    if (width <= 1024) return 2.3;
+    return 2.5;
+}
+
+export default function MeshComponent() {
+    const { viewport, size } = useThree();
+    const texture = useTexture('/images/a.png');
+    const meshRef = useRef<THREE.Mesh>(null!);
+    const matRef = useRef<MeshBasicNodeMaterial>(null!);
+    const card = useMemo(() => getCardDimensions(size.width), [size.width]);
+    const w = viewport.width * (card.w / (size.width || 1));
+    const h = viewport.height * (card.h / (size.height || 1));
+
+    useEffect(() => {
+        if (!texture) return;
+        texture.colorSpace = THREE.SRGBColorSpace;
+
+        const img = texture.image as TextureImage | undefined;
+        const imgWidth = img?.naturalWidth || img?.videoWidth || img?.width || 1254;
+        const imgHeight = img?.naturalHeight || img?.videoHeight || img?.height || 1254;
+        const imageAspect = imgWidth / (imgHeight || 1);
+        const meshAspect = w / (h || 1);
+
+        if (meshAspect < imageAspect) {
+            uCoverScale.value.set(meshAspect / imageAspect, 1.0);
+        } else {
+            uCoverScale.value.set(1.0, imageAspect / meshAspect);
+        }
+    }, [texture, w, h]);
+
+    const colorNode = useMemo(() => createTextureNode(texture), [texture]);
+
+    const handlePointerMove = (e: ThreeEvent<PointerEvent>) => {
+        if (!meshRef.current) return;
+        if (e.uv) {
+            uMouse.value.set(e.uv.x, e.uv.y);
+        }
+    };
+
+    const handlePointerEnter = () => {
+        document.body.style.cursor = 'pointer';
+        gsap.to(uHover, {
+            value: 1,
+            duration: 0.4,
+            ease: 'power2.out',
+        });
+    };
+
+    const handlePointerLeave = () => {
+        document.body.style.cursor = 'default';
+        gsap.to(uHover, {
+            value: 0,
+            duration: 0.6,
+            ease: 'power2.out',
+        });
+    };
+
+    useFrame(() => {
+        if (!meshRef.current) return;
+        const scrollY = typeof window !== 'undefined' ? window.scrollY : 0;
+        const vh = typeof window !== 'undefined' ? window.innerHeight : 800;
+        const progress = Math.min(1.5, Math.max(0, scrollY / (vh || 1)));
+        meshRef.current.rotation.x = -progress * 0.15;
+        meshRef.current.position.y = -progress * 0.1;
+    });
+
+    useGSAP(() => {
+        if (!meshRef.current) return;
+
+        const targetScale = getTargetScale(size.width);
+        const tl = gsap.timeline({ delay: 1 });
+
+        tl.to(meshRef.current.scale, {
+            x: 0.85,
+            y: 0.85,
+            duration: 0.8,
+            ease: 'power2.out',
+        })
+            .to(
+                uBend,
+                {
+                    value: Math.PI,
+                    duration: 1.8,
+                    ease: 'power3.inOut',
+                },
+                'flip'
+            )
+            .to(
+                meshRef.current.scale,
+                {
+                    x: targetScale,
+                    y: targetScale,
+                    duration: 1.8,
+                    ease: 'power3.inOut',
+                },
+                'flip'
+            );
+    }, { scope: meshRef });
+
+    return (
+        <mesh
+            ref={meshRef}
+            scale={[1, 1, 1]}
+            onPointerMove={handlePointerMove}
+            onPointerEnter={handlePointerEnter}
+            onPointerLeave={handlePointerLeave}
+        >
+            <planeGeometry args={[w, h, 128, 256]} />
+            <meshBasicNodeMaterial
+                ref={matRef}
+                side={THREE.DoubleSide}
+                transparent
+                positionNode={flipVertexNode}
+                colorNode={colorNode}
+            />
+        </mesh>
+    );
+};`;
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const article = getArticleBySlug(slug);
@@ -952,6 +1195,494 @@ export default async function ArticleSlugPage({ params }: PageProps) {
                     • Unmount holding locks next page renders<br />
                     • Scroll jump &amp; layout thrashing bugs<br />
                     • Fragile wrapper nesting in App Router
+                  </p>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <section className={styles.authorCard}>
+            <Image
+                src="/images/a.png"
+                alt="Saurabh Thapliyal"
+                width={72}
+                height={72}
+                className={styles.authorBioAvatar}
+            />
+            <div className={styles.authorBioContent}>
+              <span className={styles.authorBioName}>Saurabh Thapliyal</span>
+              <p className={styles.authorBioText}>
+                Creative developer based in Uttarakhand, India. Building interactive,
+                motion-driven web experiences with a focus on WebGPU, Three.js, shaders,
+                and smooth scroll architectures.
+              </p>
+              <div className={styles.authorLinks}>
+                <a
+                    href="https://saurow.vercel.app"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={styles.authorLink}
+                >
+                  Portfolio ↗
+                </a>
+                <a
+                    href="https://github.com/Saur0w"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={styles.authorLink}
+                >
+                  GitHub ↗
+                </a>
+                <a
+                    href="https://x.com/sauroww"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={styles.authorLink}
+                >
+                  X (Twitter) ↗
+                </a>
+              </div>
+            </div>
+          </section>
+
+          {/* Footer Navigation */}
+          <div className={styles.footerNav}>
+            <Link href="/article" className={styles.backLink}>
+              <span>←</span> Back to All Articles
+            </Link>
+            <Link href="/" className={styles.backLink}>
+              Home ↗
+            </Link>
+          </div>
+        </article>
+    );
+  }
+
+  if (slug === "fold") {
+    return (
+        <article className={styles.container}>
+          <Link href="/article" className={styles.backLink}>
+            <span>←</span> Back to Articles
+          </Link>
+
+          <header className={styles.articleHeader}>
+            <div className={styles.kickerRow}>
+              <span className={styles.kicker}>{article.kicker}</span>
+              <span className={styles.badge}>{article.status}</span>
+            </div>
+
+            <h1 className={styles.headline}>{article.title}</h1>
+
+            <p className={styles.subtitle}>{article.excerpt}</p>
+
+            {(article.demoUrl || article.githubUrl) && (
+              <div className={styles.actionRow}>
+                {article.demoUrl && (
+                  <a
+                    href={article.demoUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`${styles.actionBtn} ${styles.actionBtnPrimary}`}
+                  >
+                    Live Demo ↗
+                  </a>
+                )}
+                {article.githubUrl && (
+                  <a
+                    href={article.githubUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={styles.actionBtn}
+                  >
+                    GitHub Repository ↗
+                  </a>
+                )}
+              </div>
+            )}
+
+            <div className={styles.metaRow}>
+              <div className={styles.authorGroup}>
+                <Image
+                    src="/images/a.png"
+                    alt="Saurabh Thapliyal"
+                    width={40}
+                    height={40}
+                    className={styles.authorAvatar}
+                />
+                <div className={styles.authorInfo}>
+                  <span className={styles.authorName}>Saurabh Thapliyal</span>
+                  <span className={styles.articleDate}>
+                  {article.date} · {article.readTime}
+                </span>
+                </div>
+              </div>
+
+              <div className={styles.pillGroup}>
+                {article.tags.map((tag) => (
+                    <span key={tag} className={styles.techPill}>
+                  {tag}
+                </span>
+                ))}
+              </div>
+            </div>
+          </header>
+
+          <figure className={styles.heroMedia}>
+            <div className={styles.heroImageWrapper}>
+              <Image
+                  src={article.image}
+                  alt={article.imageAlt}
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 920px"
+                  className={styles.heroImg}
+                  priority
+              />
+            </div>
+            <figcaption className={styles.caption}>
+              Figure 1: Interactive 3D folding mesh rendered with Three.js TSL WebGPU node materials, featuring dynamic trigonometric depth curvature, pointer falloff, and bilateral UV orientation.
+            </figcaption>
+          </figure>
+
+          <nav className={styles.tocCard} aria-label="Table of contents">
+            <span className={styles.tocTitle}>Table of Contents</span>
+            <ul className={styles.tocList}>
+              <li>
+                <Link href="#context" className={styles.tocLink}>
+                  Context &amp; Mechanical Inspiration
+                </Link>
+              </li>
+              <li>
+                <Link href="#structure" className={styles.tocLink}>
+                  Project Architecture
+                </Link>
+              </li>
+              <li>
+                <Link href="#vertex-deformation" className={styles.tocLink}>
+                  Trigonometric Vertex Node Graph (flipVertexNode)
+                </Link>
+              </li>
+              <li>
+                <Link href="#curvature-dynamics" className={styles.tocLink}>
+                  The Mathematics of Mid-Flight Flex
+                </Link>
+              </li>
+              <li>
+                <Link href="#backface-uv" className={styles.tocLink}>
+                  Fragment Shading &amp; Backface UV Orientation
+                </Link>
+              </li>
+              <li>
+                <Link href="#pointer-dynamics" className={styles.tocLink}>
+                  Interactive Pointer Tracking &amp; Backface Inversion
+                </Link>
+              </li>
+              <li>
+                <Link href="#gsap-integration" className={styles.tocLink}>
+                  GSAP Timeline Choreography &amp; Mesh Subdivision
+                </Link>
+              </li>
+              <li>
+                <Link href="#comparison" className={styles.tocLink}>
+                  Architectural Comparison: TSL vs. GLSL vs. CSS 3D
+                </Link>
+              </li>
+            </ul>
+          </nav>
+
+          <div className={styles.prose}>
+            <p>
+              I am Saurabh Thapliyal, and in this breakdown I deconstruct the mathematics and shader
+              architecture behind our <strong>3D Mesh Folding Card</strong>—an interactive experience built with
+              <strong> Three.js Shading Language (TSL)</strong>, <strong>WebGPU</strong>, and <strong>React Three Fiber</strong>.
+              Here, I examine how we moved beyond rigid CSS transforms to engineer an authentic paper-like folding simulation
+              with dynamic trigonometric depth curvature, bilateral texture orientation, and cursor-reactive surface tension.
+            </p>
+
+            <section id="context">
+              <h2>Context &amp; Mechanical Inspiration</h2>
+              <p>
+                In interface design, 3D card flips are commonly implemented using CSS <code>transform: rotateY(180deg)</code> or
+                flat Three.js planes. While functionally adequate, rigid planar rotation feels mechanical and artificial.
+                Real materials—cardstock, parchment, or laminated paper—undergo tensile strain when folded. They bend,
+                bow outwards along their transverse axis, and resist instantaneous angular displacement.
+              </p>
+              <p>
+                To replicate physical paper, we must displace the mesh&apos;s internal vertices along the Z-axis in mid-flip,
+                peaking at 90 degrees before settling completely flat on the reverse face. By offloading this calculation
+                entirely to GPU vertex shaders using <strong>Three.js TSL</strong>, we achieve buttery smooth 120 FPS
+                deformation across high-density geometries with zero JavaScript main-thread calculation overhead.
+              </p>
+            </section>
+
+            <section id="structure">
+              <h2>Project Architecture</h2>
+              <p>
+                The component structure isolates the declarative R3F scene graph, procedural TSL uniform definitions,
+                and DOM hover event dispatchers into modular layers:
+              </p>
+
+              <div className={styles.codeContainer}>
+                <div className={styles.codeHeader}>
+                  <span className={styles.codeTitle}>saurow-fold / directory tree</span>
+                  <span className={styles.codeLang}>TREE</span>
+                </div>
+                <pre className={styles.codePre}>
+                  <code>{FOLD_FOLDER_STRUCTURE}</code>
+                </pre>
+              </div>
+
+              <p>
+                The shader graph is maintained inside <code>lib/Shaders/index.ts</code> as standalone node exports.
+                Because TSL nodes are pure composable JavaScript objects, they can be shared directly across materials,
+                tested in isolation, and compiled natively to WGSL (WebGPU) or GLSL (WebGL) without string parsing.
+              </p>
+            </section>
+
+            <section id="vertex-deformation">
+              <h2>Trigonometric Vertex Node Graph (flipVertexNode)</h2>
+              <p>
+                The core displacement logic operates within <code>positionNode</code>, replacing standard vertex matrix
+                multiplication with a custom parametric deformation pipeline:
+              </p>
+
+              <div className={styles.codeContainer}>
+                <div className={styles.codeHeader}>
+                  <span className={styles.codeTitle}>src/lib/Shaders/index.ts · TSL Vertex Graph</span>
+                  <span className={styles.codeLang}>TSL / TS</span>
+                </div>
+                <pre className={styles.codePre}>
+                  <code>{FOLD_VERTEX_NODE_CODE}</code>
+                </pre>
+              </div>
+
+              <p>
+                The vertex node computes displacement in three sequential stages:
+              </p>
+              <ul>
+                <li>
+                  <strong>Cursor Spring Offset:</strong> Calculates radial Euclidean distance from UV cursor coordinates
+                  with smoothstep interpolation, displacing vertices forward along the active face normal.
+                </li>
+                <li>
+                  <strong>Mid-Flight Flex Curvature:</strong> Injects a parabolic sine-wave Z-depth displacement that scales
+                  dynamically with the folding angle (<code>uBend</code>).
+                </li>
+                <li>
+                  <strong>Pivot Axis Rotation:</strong> Translates coordinates relative to <code>uPivot</code>, applies
+                  standard 2D rotation matrix math along Y and Z, and returns the final transformed 3D vector.
+                </li>
+              </ul>
+            </section>
+
+            <section id="curvature-dynamics">
+              <h2>The Mathematics of Mid-Flight Flex</h2>
+              <p>
+                The signature visual element of the fold is its organic, rubber-sheet curvature during transit.
+                This is achieved through a harmonic compound trigonometric function:
+              </p>
+
+              <div className={styles.mathBox}>
+                <span className={styles.mathLabel}>Trigonometric Surface Bow Formula</span>
+                <div className={styles.mathFormula}>
+                  flex = sin(uv.y * π) * uCurve * sin(uBend)
+                </div>
+              </div>
+
+              <p>
+                This equation exhibits critical physical properties:
+              </p>
+              <ul>
+                <li>
+                  <strong>Zero Boundary Displacement:</strong> At the card&apos;s top edge (<code>uv.y = 0.0</code>) and bottom edge
+                  (<code>uv.y = 1.0</code>), <code>sin(uv.y * π)</code> equals <code>0.0</code>. The edges remain pinned in space,
+                  preventing geometry detachment.
+                </li>
+                <li>
+                  <strong>Cylindrical Arch Profile:</strong> At the vertical midpoint (<code>uv.y = 0.5</code>), <code>sin(0.5 * π) = 1.0</code>,
+                  producing maximal outward protrusion that mimics natural elastic sheet tension.
+                </li>
+                <li>
+                  <strong>Dynamic Angular Gating:</strong> <code>sin(uBend)</code> acts as an automatic envelope generator.
+                  At rest on the front face (<code>uBend = 0</code>), <code>sin(0) = 0</code>. Mid-flip at 90 degrees
+                  (<code>uBend = π/2</code>), <code>sin(π/2) = 1.0</code>, unlocking full curvature. When the fold completes
+                  (<code>uBend = π</code>), <code>sin(π) = 0</code>, flattening the card completely against its destination.
+                </li>
+              </ul>
+
+              <div className={styles.callout}>
+                <span className={styles.calloutTitle}>Initial Angle &amp; Curvature Tuning</span>
+                <p className={styles.calloutBody}>
+                  The <code>uCurve</code> uniform sets the depth of the arc (configured to <code>0.35</code> for balanced physical tension).
+                  Notice also that <code>uBend</code> initializes at <code>-0.2</code> rather than a completely flat <code>0.0</code>.
+                  This deliberate resting offset introduces subtle 3D perspective and tactile depth the instant the page mounts.
+                </p>
+              </div>
+            </section>
+
+            <section id="backface-uv">
+              <h2>Fragment Shading, Backface UV Orientation &amp; Object-Fit Cover</h2>
+              <p>
+                A notorious issue in double-sided 3D planes is <strong>UV mirroring</strong>. When rotating 180 degrees around
+                the Y-axis, the viewer observes the geometric backside of the polygons. Because standard texture coordinates
+                run from left-to-right on the front face, viewing the rear face reverses the horizontal axis, rendering
+                text and typography backwards.
+              </p>
+              <p>
+                Furthermore, textures loaded onto dynamically sized planes often suffer from stretching. In traditional CSS,
+                we rely on <code>object-fit: cover</code>. In Three.js TSL, we solve both challenges inside a single
+                <code>MeshBasicNodeMaterial</code> by combining dynamic aspect ratio scaling with the built-in <code>frontFacing</code> conditional node:
+              </p>
+
+              <div className={styles.codeContainer}>
+                <div className={styles.codeHeader}>
+                  <span className={styles.codeTitle}>src/lib/Shaders/index.ts · Fragment Texture Node</span>
+                  <span className={styles.codeLang}>TSL / TS</span>
+                </div>
+                <pre className={styles.codePre}>
+                  <code>{FOLD_TEXTURE_NODE_CODE}</code>
+                </pre>
+              </div>
+
+              <p>
+                In <code>mesh.tsx</code>, a <code>useEffect</code> listener compares the mesh aspect ratio (<code>w / h</code>) with the image natural aspect ratio (<code>imgWidth / imgHeight</code>):
+              </p>
+              <ul>
+                <li>
+                  If <code>meshAspect &lt; imageAspect</code>, we set <code>uCoverScale.value.set(meshAspect / imageAspect, 1.0)</code>.
+                </li>
+                <li>
+                  Otherwise, we set <code>uCoverScale.value.set(1.0, imageAspect / meshAspect)</code>.
+                </li>
+              </ul>
+              <p>
+                When <code>frontFacing</code> evaluates to false on flip, <code>select()</code> effortlessly switches UV coordinates to
+                the corrected back-face UV mapping (<code>vec2(coverUv.x, 1.0 - coverUv.y)</code>), multiplying sampled color by <code>uBrightness</code> (0.75) for a tailored editorial contrast.
+              </p>
+            </section>
+
+            <section id="pointer-dynamics">
+              <h2>Interactive Pointer Tracking &amp; Scroll Parallax</h2>
+              <p>
+                To make the card feel alive between folding states, we combine pointer proximity deformation with momentum scroll parallax:
+              </p>
+
+              <div className={styles.codeContainer}>
+                <div className={styles.codeHeader}>
+                  <span className={styles.codeTitle}>TSL Pointer Parity &amp; Falloff</span>
+                  <span className={styles.codeLang}>TSL</span>
+                </div>
+                <pre className={styles.codePre}>
+                  <code>{`// Cursor proximity falloff & bidirectional hover offset
+const dist = length(uv().sub(mouse));
+const falloff = smoothstep(0.25, 0.0, dist);
+const faceDir = select(cos(uBend).greaterThanEqual(0.0), float(1.0), float(-1.0));
+const hoverOffset = falloff.mul(0.2).mul(uHover).mul(faceDir);`}</code>
+                </pre>
+              </div>
+
+              <p>
+                Additionally, <code>useFrame</code> continuously samples window scroll progress:
+              </p>
+              <div className={styles.codeContainer}>
+                <div className={styles.codeHeader}>
+                  <span className={styles.codeTitle}>src/components/Landing/mesh.tsx · Scroll Parallax</span>
+                  <span className={styles.codeLang}>TSX</span>
+                </div>
+                <pre className={styles.codePre}>
+                  <code>{`useFrame(() => {
+  if (!meshRef.current) return;
+  const scrollY = typeof window !== 'undefined' ? window.scrollY : 0;
+  const vh = typeof window !== 'undefined' ? window.innerHeight : 800;
+  const progress = Math.min(1.5, Math.max(0, scrollY / (vh || 1)));
+  meshRef.current.rotation.x = -progress * 0.15;
+  meshRef.current.position.y = -progress * 0.1;
+});`}</code>
+                </pre>
+              </div>
+
+              <p>
+                As the visitor scrolls through the viewport, the mesh tilts gently forward and shifts downward,
+                creating tactile cinematic depth that synchronizes with the typography.
+              </p>
+            </section>
+
+            <section id="gsap-integration">
+              <h2>GSAP Timeline Choreography: Anticipation &amp; Flip Explosion</h2>
+              <p>
+                A convincing 3D flip animation requires dramatic timing. Rather than a linear flip, the animation employs classical Disney animation principles—specifically <strong>anticipation</strong>:
+              </p>
+
+              <div className={styles.codeContainer}>
+                <div className={styles.codeHeader}>
+                  <span className={styles.codeTitle}>src/components/Landing/mesh.tsx · Component &amp; Timeline</span>
+                  <span className={styles.codeLang}>TSX</span>
+                </div>
+                <pre className={styles.codePre}>
+                  <code>{FOLD_MESH_COMPONENT_CODE}</code>
+                </pre>
+              </div>
+
+              <p>
+                The choreography unfolds in two distinct stages:
+              </p>
+              <ul>
+                <li>
+                  <strong>1. Anticipation Recoil:</strong> Over 0.8s, the card scales down to <code>0.85</code>, compressing slightly inward like a coiled spring.
+                </li>
+                <li>
+                  <strong>2. Simultaneous Flip &amp; Scale Surge:</strong> Using the shared <code>&apos;flip&apos;</code> timeline label, <code>uBend</code> rotates from <code>0</code> to <code>π</code> over 1.8s with <code>power3.inOut</code> easing, while the mesh scale expands outward from <code>0.85</code> to its viewport-responsive <code>targetScale</code> (up to 2.5x).
+                </li>
+              </ul>
+              <p>
+                Rendered with <code>&lt;planeGeometry args=&#123;[w, h, 128, 256]&#125; /&gt;</code> (128 horizontal x 256 vertical subdivisions), the resulting bend exhibits zero polygonal faceted seams.
+              </p>
+            </section>
+
+            <section id="comparison">
+              <h2>Architectural Comparison: TSL vs. GLSL vs. CSS 3D</h2>
+              <p>
+                Evaluating how modern WebGPU node shaders improve upon legacy graphics techniques and DOM transforms:
+              </p>
+
+              <div className={styles.grid2}>
+                <div className={styles.featureCard}>
+                  <span className={styles.featureCardTitle}>Three.js TSL Node System</span>
+                  <p className={styles.featureCardDesc}>
+                    • Native WebGPU &amp; WebGL compilation<br />
+                    • Type-safe shader graphs in pure TypeScript<br />
+                    • Zero runtime GLSL string parsing overhead<br />
+                    • Built-in dynamic frontFacing branching<br />
+                    • Uniforms animate directly via GSAP
+                  </p>
+                </div>
+
+                <div className={styles.featureCard}>
+                  <span className={styles.featureCardTitle}>Legacy GLSL ShaderMaterial</span>
+                  <p className={styles.featureCardDesc}>
+                    • Fragile raw string templates without linting<br />
+                    • Requires manual dual-plane mesh hacks for text<br />
+                    • WebGL 2 boilerplate &amp; no WebGPU WGSL export<br />
+                    • Difficult to compose and share shader nodes
+                  </p>
+                </div>
+
+                <div className={styles.featureCard}>
+                  <span className={styles.featureCardTitle}>CSS 3D (transform-style)</span>
+                  <p className={styles.featureCardDesc}>
+                    • Rigid planar surfaces without vertex deformation<br />
+                    • Zero tensile bow or paper flex dynamics<br />
+                    • Layout thrashing and paint invalidation on low-end devices<br />
+                    • Unnatural digital feel
+                  </p>
+                </div>
+
+                <div className={styles.featureCard}>
+                  <span className={styles.featureCardTitle}>Performance &amp; Frame Pacing</span>
+                  <p className={styles.featureCardDesc}>
+                    • Displaces 65,000+ vertices at 120 FPS<br />
+                    • 0ms JavaScript frame calculation cost<br />
+                    • Pure GPU compute execution<br />
+                    • Responsive layout scaling across all viewports
                   </p>
                 </div>
               </div>

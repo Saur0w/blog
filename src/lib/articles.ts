@@ -50,6 +50,23 @@ export const ARTICLES: Article[] = [
     demoUrl: "https://str1de.vercel.app",
     githubUrl: "https://github.com/Saur0w/stride",
   },
+  {
+    slug: "fold",
+    title: "Paper Fold: 3D Mesh Deformation with Three.js TSL",
+    kicker: "WEBGPU / TSL",
+    excerpt:
+      "Engineering interactive 3D card folding, dynamic trigonometric depth curvature, and backface texture correction using Three.js Shading Language (TSL) and WebGPU.",
+    date: "Sep 2026",
+    readTime: "7 min read",
+    status: "Breakdown",
+    isPublished: true,
+    image: "/images/fold.png",
+    imageAlt: "Saurow portfolio 3D interactive mesh card folding and TSL deformation",
+    tags: ["Three.js", "TSL", "WebGPU", "React Three Fiber", "GSAP"],
+    icon: "❖",
+    demoUrl: "https://saurow.vercel.app",
+    githubUrl: "https://github.com/Saur0w",
+  },
 ];
 
 export function getAllArticles(): Article[] {
