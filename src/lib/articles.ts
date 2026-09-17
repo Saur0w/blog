@@ -60,7 +60,7 @@ export const ARTICLES: Article[] = [
     readTime: "7 min read",
     status: "Breakdown",
     isPublished: true,
-    image: "/images/fold.png",
+    image: "/images/fold/fold.png",
     imageAlt: "Saurow portfolio 3D interactive mesh card folding and TSL deformation",
     tags: ["Three.js", "TSL", "WebGPU", "React Three Fiber", "GSAP"],
     icon: "❖",
